@@ -1,0 +1,19 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=LowQual,Description="Low quality variant call">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##INFO=<ID=ANN,Number=.,Type=String,Description="Functional annotations: 'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TUMOR	NORMAL
+chr7	55242465	cosm6224	G	A	99.0	PASS	DP=142;AF=0.42;ANN=A|missense_variant|MODERATE|EGFR|ENSG00000146648|transcript|ENST00000275493|protein_coding|19/28|c.2235_2249del15|p.Glu746_Ala750del|2402/5610|2235/3633|746/1210||	GT:AD:DP	0/1:82,60:142	0/0:120,0:120
+chr17	7577121	cosm10648	G	A	150.0	PASS	DP=210;AF=0.65;ANN=A|stop_gained|HIGH|TP53|ENSG00000141510|transcript|ENST00000269305|protein_coding|8/11|c.659G>A|p.Arg220Gln|850/2576|659/1182|220/393||	GT:AD:DP	0/1:73,137:210	0/0:180,1:181
+chr12	25398284	cosm521	C	A	120.0	PASS	DP=98;AF=0.35;ANN=A|missense_variant|MODERATE|KRAS|ENSG00000133703|transcript|ENST00000256078|protein_coding|2/4|c.35G>T|p.Gly12Val|215/5714|35/570|12/189||	GT:AD:DP	0/1:64,34:98	0/0:95,0:95
+chr7	140453136	cosm476	A	T	200.0	PASS	DP=320;AF=0.48;ANN=T|missense_variant|MODERATE|BRAF|ENSG00000157764|transcript|ENST00000288602|protein_coding|15/18|c.1799T>A|p.Val600Glu|1860/2949|1799/2301|600/766||	GT:AD:DP	0/1:166,154:320	0/0:210,0:210
+chr3	178936091	cosm763	G	A	85.0	PASS	DP=75;AF=0.28;ANN=A|missense_variant|MODERATE|PIK3CA|ENSG00000121879|transcript|ENST00000263967|protein_coding|9/20|c.1633G>A|p.Glu545Lys|1750/3723|1633/3207|545/1068||	GT:AD:DP	0/1:54,21:75	0/0:80,0:80
+chr17	41244435	.	C	T	18.5	LowQual	DP=12;AF=0.15;ANN=T|synonymous_variant|LOW|BRCA1|ENSG00000012048|transcript|ENST00000357654|protein_coding|10/24|c.2082C>T|p.Ser694Ser|2200/7088|2082/5592|694/1863||	GT:AD:DP	0/1:10,2:12	0/0:15,0:15
+chr13	32906729	.	A	G	12.0	LowQual	DP=8;AF=0.12;ANN=G|intron_variant|MODIFIER|BRCA2|ENSG00000139618|transcript|ENST00000380152|protein_coding|10/26|c.631-15A>G|||||||	GT:AD:DP	0/1:7,1:8	0/0:10,0:10
+chr17	7577538	cosm10649	C	T	95.0	PASS	DP=115;AF=0.51;ANN=T|missense_variant|MODERATE|TP53|ENSG00000141510|transcript|ENST00000269305|protein_coding|5/11|c.524G>A|p.Arg175His|715/2576|524/1182|175/393||	GT:AD:DP	0/1:56,59:115	0/0:90,0:90
+
