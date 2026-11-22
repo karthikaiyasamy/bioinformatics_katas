@@ -43,6 +43,11 @@ Both implementations calculate the following metrics:
 * **Rust Sequential:** Single-threaded `std::io::BufReader` leveraging reusable `Vec<u8>` line buffers to achieve zero heap allocations in the tight loop.
 * **Rust Parallel:** Chunk-based parallel reduction using `rayon::prelude::*`, splitting 50,000-read batches across work-stealing worker threads with thread-local fold and reduce operations.
 
+### 2.5 Algorithm Verification
+Before executing performance benchmarks, all algorithms and coordinate mechanics were verified against the automated unit test suite (13 test cases passing in 0.139 seconds):
+
+![Test Runner Terminal Output](./assets/terminal_test_suite.png)
+
 ---
 
 ## 3. Empirical Benchmark Results
@@ -62,7 +67,21 @@ All tests were executed on the same machine under identical background load. Max
 | **Retired CPU Instructions** | 244.97 Billion | 17.24 Billion (main) + workers | 2.03 Billion | 2.96 Billion |
 | **Implementation Complexity** | Low (~60 LOC) | Medium (~95 LOC) | Low-Medium (~90 LOC) | Low-Medium (~115 LOC) |
 
-### 3.2 Output Verification
+### 3.2 Visual Performance Comparison
+
+![Bioinformatics Benchmark Performance Charts](./assets/benchmark_performance_charts.png)
+
+### 3.3 Empirical Terminal Logs & Resource Accounting
+
+The live terminal captures below record the actual benchmark executions alongside macOS `/usr/bin/time -l` kernel accounting metrics:
+
+#### Python Sequential & Concurrent Execution (15.0s runtime, 387 MB IPC memory spike)
+![Python Benchmark Terminal Output](./assets/terminal_python_benchmark.png)
+
+#### Rust Sequential & Parallel Rayon Execution (86 ms runtime, 2.87 MB memory, 120x fewer instructions)
+![Rust Benchmark Terminal Output](./assets/terminal_rust_benchmark.png)
+
+### 3.4 Output Verification
 All four test configurations generated identical summary values, confirming mathematical and biological consistency:
 * **Mean Quality (Q):** 34.83
 * **GC Percentage:** 44.00%

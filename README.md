@@ -91,6 +91,8 @@ Next-Generation Sequencing (NGS) instruments generate hundreds of millions of FA
 
 An empirical benchmarking study and architectural evaluation comparing Python and Rust on a 500,000-read Illumina dataset (75 million bases, 163.5 MB raw FASTQ):
 
+![Bioinformatics Benchmark Performance Charts](./assets/benchmark_performance_charts.png)
+
 * **Performance:** Rust Parallel processes 75 million bases in **86.15 ms** (870.57 Mb/s) vs Python Sequential **15.05 s** (175x speedup).
 * **Memory Footprint:** Rust operates with **2.87 MB** Max RSS vs Python Concurrent **387.28 MB** (avoiding Linux cluster OOM failures).
 * **Architectural Deep Dive:** In-depth evaluation of zero-allocation streaming, L1/L2 cache locality, multiprocessing IPC serialization penalties, and production hybrid architectures (PyO3 and Maturin).
