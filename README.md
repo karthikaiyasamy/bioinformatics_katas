@@ -11,8 +11,14 @@ This repository focuses on **low-level systems discipline**: constant-memory str
 ```
 bioinformatics_katas/
 ├── README.md
+├── COMPARATIVE_STUDY_PYTHON_VS_RUST.md  # Empirical Python vs Rust benchmark study
 ├── pyproject.toml
 ├── run_tests.py                  # Zero-dependency test runner
+├── run_all_benchmarks.sh         # Reproducible Python vs Rust benchmark script
+├── generate_benchmark_fastq.py   # Synthetic 500k-read FASTQ generator
+├── run_python_bench.py           # Python sequential & concurrent benchmark runner
+├── assets/                       # Performance charts & terminal execution captures
+├── fastq_summary_rs/             # Rust zero-allocation & Rayon FASTQ analyzer
 ├── data/                         # Realistic clinical cancer datasets
 │   ├── sample.vcf                # VCF v4.2 with somatic cancer variants
 │   ├── sample.vcf.gz             # Compressed VCF

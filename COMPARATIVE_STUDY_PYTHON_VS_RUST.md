@@ -154,7 +154,7 @@ While Rust's raw speed is extraordinary, adopting it in a high-throughput clinic
 2. **Ecosystem Depth in Specialized Biology:**
    * Python has 15+ years of battle-tested domain libraries: `Scanpy` (single-cell transcriptomics), `pysam` (BAM/CRAM bindings), `Biopython`, `scikit-learn`, and PyTorch/JAX for state-of-the-art biological deep learning (AlphaFold, ESM).
    * While Rust provides excellent high-performance primitives (`noodles`, `needletail`), niche cancer genomics algorithms (such as complex phylogenetic tree reconstructions or mutational signature deconvolution) often do not exist in pure Rust, requiring teams to implement mathematical models from scratch.
-3. **Team Hiring, Culture, and Maintainability:**
+3. **Team Onboarding, Culture, and Maintainability:**
    * Most computational biologists, geneticists, bioinformaticians, and clinical analysts are trained in Python and R, not systems programming in Rust.
    * Mandating a pure Rust codebase in a genomics department risks creating maintenance silos where only one or two engineers can modify critical pipelines, creating operational bottlenecks when team members rotate.
 
@@ -192,24 +192,24 @@ In production genomics infrastructure, engineering teams rarely make an all-or-n
 
 ---
 
-## 6. Production Systems Architecture & Engineering FAQ
+## 6. Key Takeaways & Architectural Observations
 
-Key architectural decisions and design trade-offs encountered when engineering high-throughput genomics infrastructure:
+Synthesizing the benchmark numbers into practical engineering guidelines for high-throughput genomics pipelines:
 
-### Decision 1: When should a pipeline component be built in Rust versus Python?
-* **Engineering Rationale:** Evaluate where the computational bottleneck sits. If a component is an I/O or CPU-bound stage that touches millions of reads per sample (such as raw FASTQ parsing, BAM filtration, or variant-level annotation), Rust delivers transformative gains: in our benchmarks, Rust was over 100 times faster and consumed a fraction of the memory (2.87 MB vs. hundreds of MBs in Python). Conversely, for exploratory statistical modeling, downstream cancer cohort stratification, visualization, and rapid pipeline prototyping, Python remains the right choice due to ecosystem depth and developer agility.
+### 6.1 Selecting Rust vs. Python by Pipeline Stage
+* **Observation:** Evaluate where the computational bottleneck sits. If a stage is an I/O or CPU-bound loop touching millions of reads per sample (raw FASTQ parsing, BAM filtration, or variant-level annotation), Rust delivers transformative gains: over 100x faster execution and a fraction of the memory (2.87 MB vs. hundreds of MBs in Python). Conversely, for exploratory statistical modeling, downstream cohort stratification, visualization, and rapid prototyping, Python remains ideal due to its ecosystem depth and developer agility.
 
-### Decision 2: Why not simply parallelize Python using multiprocessing?
-* **Engineering Rationale:** Python multiprocessing works well for coarse-grained embarrassingly parallel jobs, but in data-heavy genomics it introduces hidden costs. Because of the GIL, processes must exchange data via IPC and pickling. In our 500k-read benchmark, multiprocessing burned 40 seconds of cumulative CPU time to gain a modest 1.33x wall-clock improvement, while peak memory jumped from 16 MB to 387 MB due to object materialization. In Rust, Rayon enables true shared-memory multithreading with work-stealing and zero serialization, yielding an 86 ms runtime with minimal memory footprint.
+### 6.2 Hidden Costs of Python Multiprocessing Under Data Load
+* **Observation:** Python multiprocessing works well for coarse-grained embarrassingly parallel tasks, but in data-heavy genomics it introduces steep serialization costs. Because of the GIL, processes must exchange data via IPC and pickling. In the 500k-read benchmark, multiprocessing burned 40 seconds of cumulative CPU time to gain a modest 1.33x wall-clock improvement, while peak memory jumped from 16 MB to 387 MB due to object materialization. In Rust, Rayon enables true shared-memory multithreading with work-stealing and zero serialization, yielding an 86 ms runtime with minimal memory footprint.
 
-### Decision 3: How should teams handle legacy pipeline modernization and maintainability?
-* **Engineering Rationale:** A complete rewrite is rarely pragmatic in clinical production. The most effective approach is a phased hybrid model using PyO3 and Maturin. We can isolate the specific bottleneck (e.g., a custom variant parser or alignment parser), rewrite just that core algorithm in Rust, compile it into a Python wheel, and expose it directly into the team's existing Python scripts and Nextflow modules. Analysts keep their familiar interfaces, while the infrastructure gains sub-second execution speeds and avoids OOM crashes on shared compute clusters.
+### 6.3 Incremental Modernization with PyO3 and Maturin
+* **Observation:** Full rewrites are rarely practical for established pipelines. A phased hybrid model using PyO3 and Maturin offers the cleanest middle ground: isolate a specific bottleneck (such as a custom variant parser or alignment reader), implement just that core algorithm in Rust, compile it into a Python wheel, and expose it directly inside existing Python scripts and Nextflow modules. Analysts keep their familiar interfaces while the underlying compute layer gains sub-second execution speeds and avoids OOM evictions on shared clusters.
 
-### Decision 4: Our Python pipeline is running slow. What is the rubric for rewriting in Rust?
-* **Engineering Rationale:** Follow a three-step decision framework:
-  1. **Profile First (Amdahl's Law):** We must measure where the CPU cycles and memory are actually spent. If 90% of pipeline time is spent waiting on external alignment tools (e.g., BWA-MEM or minimap2) or database queries, rewriting Python wrapper scripts in Rust will yield negligible gains.
-  2. **Isolate the Streaming Core:** If profiling proves that Python is choking on repetitive, high-volume data streaming (such as iterating over 500 million reads, parsing complex CIGAR strings, or filtering multi-sample VCF files), we isolate that specific inner loop.
-  3. **Hybrid Packaging via PyO3 / Maturin:** We write only that core algorithm in Rust, compile it as a native C-extension, and expose it via a clean Python API. Bioinformaticians keep using their familiar Python and Nextflow workflow definitions, while the core infrastructure gains 100x speedups, sub-10 MB memory stability, and zero OOM risks on cluster nodes.
+### 6.4 A Practical Profiling Rubric Before Rewriting
+* **Observation:** Before moving any Python pipeline component to Rust, a three-step check keeps engineering effort focused:
+  1. **Profile First (Amdahl's Law):** Measure where CPU cycles and memory are actually spent. If 90% of wall time is spent waiting on external alignment binaries (e.g., BWA-MEM or minimap2) or database queries, rewriting Python wrapper scripts in Rust yields negligible gains.
+  2. **Isolate the Streaming Core:** If profiling shows Python choking on repetitive, high-volume data streaming (iterating over hundreds of millions of reads, parsing complex CIGAR strings, or filtering multi-sample VCFs), isolate that tight inner loop.
+  3. **Package as a Native Extension:** Keep the high-level orchestration in Python/Nextflow and compile only the hot inner loop in Rust via PyO3/Maturin.
 
 ---
 
@@ -218,4 +218,5 @@ Key architectural decisions and design trade-offs encountered when engineering h
 * Synthetic Data Generator: `./generate_benchmark_fastq.py`
 * Python Benchmark Suite: `./run_python_bench.py`
 * Rust Analyzer Crate: `./fastq_summary_rs/`
-* Benchmark Dataset: `./data/benchmark_500k.fastq`
+* Reproducible Benchmark Runner: `./run_all_benchmarks.sh`
+* Charts & Terminal Captures: `./assets/`
